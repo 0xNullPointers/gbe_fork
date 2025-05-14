@@ -1,299 +1,115 @@
-name: "Prepare release"
+name: GBE Release
 
 on:
-  push:
-    tags:
-      - "release-*"
   workflow_dispatch:
-    # allows manual trigger
-
-permissions:
-  contents: "write"
-
-env:
-  THIRD_PARTY_BASE_DIR: "third-party"
+  schedule:
+    - cron: '0 0 */2 * *'
 
 jobs:
-  emu-win-all:
-    name: "Emu win all"
-    if: ${{ !cancelled() }}
-    uses: "./.github/workflows/emu-build-all-win.yml"
-
-  emu-win-prep:
-    needs: ["emu-win-all"]
-    runs-on: "windows-2022"
+  gbe-release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
     steps:
-      # on Windows Git will auto change line ending to CRLF, not preferable
-      - name: "Ensure LF line ending"
-        shell: "cmd"
-        working-directory: "${{ github.workspace }}"
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Check and sync fork with upstream
+        shell: pwsh
         run: |
-          git config --local core.autocrlf false
-          git config --system core.autocrlf false
-          git config --global core.autocrlf false
+          # Set up Git identity for commits
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          
+          # Add upstream remote
+          git remote remove upstream 2>$null
+          git remote add upstream https://github.com/Detanup01/gbe_fork.git
+          
+          # Fetch from upstream dev branch
+          git fetch upstream dev
+          
+          Write-Host "Checking if sync is needed..."
+          
+          # Try to merge upstream/dev into main
+          $needSync = $false
+          git merge-base --is-ancestor HEAD upstream/dev 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "Repository needs to be synced with upstream."
+            $needSync = $true
+            git merge upstream/dev --no-edit
+            git push origin main
+            Write-Host "Sync completed successfully."
+          } else {
+            Write-Host "Repository is already up to date with upstream."
+          }
+          
+          # Set environment variable based on sync status
+          echo "FORK_SYNCED=$needSync" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      # we need branch because it has package scripts
-      - name: "Checkout branch"
-        uses: actions/checkout@v4
-
-      - name: "Clone third-party deps (deps/win)"
-        uses: actions/checkout@v4
-        with:
-          ref: "third-party/deps/win"
-          path: "${{env.THIRD_PARTY_BASE_DIR}}/deps/win"
-
-      # download artifacts
-      - name: "Download emu build artifacts (Win)"
-        uses: actions/download-artifact@v4
-        with:
-          path: "build/win"
-          pattern: "emu-win-*-${{ github.sha }}"
-          merge-multiple: true
-
-      # print files
-      - name: "Print files"
-        shell: "cmd"
-        working-directory: "${{ github.workspace }}"
+      - name: Check existing releases
+        id: check_release
+        shell: pwsh
         run: |
-          dir /s /b /a:-d build\win
+          # Check if source release tag exists
+          $sourceTag = (Invoke-RestMethod -Uri "https://api.github.com/repos/Detanup01/gbe_fork/releases/latest").tag_name
+          try {
+            Invoke-RestMethod -Uri "https://api.github.com/repos/${{ github.repository }}/releases/tags/$sourceTag" -ErrorAction Stop
+            echo "SKIP_RELEASE=true" | Out-File -FilePath $env:GITHUB_ENV -Append
+          } catch {
+            echo "SKIP_RELEASE=false" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
 
-      # package (release mode)
-      - name: "Package build (release)"
-        shell: "cmd"
-        working-directory: "${{ github.workspace }}"
-        run: package_win.bat vs2022\release
-
-      # package (debug mode)
-      - name: "Package build (debug)"
-        shell: "cmd"
-        working-directory: "${{ github.workspace }}"
-        run: package_win.bat vs2022\debug 1
-
-      # release (debug + release modes) if this is a tag push
-      - name: "Release"
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: "build/package/win/**/*"
-
-      # upload artifacts/packages if this is a manual run
-      - name: "Upload release package"
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: "release-emu-win-release-${{ github.sha }}"
-          path: "build/package/win/vs2022/*release*"
-          if-no-files-found: "error"
-          compression-level: 0
-          retention-days: 7
-
-      - name: "Upload debug package"
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: "release-emu-win-debug-${{ github.sha }}"
-          path: "build/package/win/vs2022/*debug*"
-          if-no-files-found: "error"
-          compression-level: 0
-          retention-days: 7
-
-  emu-linux-all:
-    name: "Emu linux all"
-    if: ${{ !cancelled() }}
-    uses: "./.github/workflows/emu-build-all-linux.yml"
-
-  emu-linux-prep:
-    needs: ["emu-linux-all"]
-    runs-on: "ubuntu-22.04"
-    steps:
-      # we need branch because it has package scripts
-      - name: "Checkout branch"
-        uses: actions/checkout@v4
-
-      - name: "Clone third-party deps (deps/linux)"
-        uses: actions/checkout@v4
-        with:
-          ref: "third-party/deps/linux"
-          path: "${{env.THIRD_PARTY_BASE_DIR}}/deps/linux"
-
-      # download artifacts
-      - name: "Download emu build artifacts (linux)"
-        uses: actions/download-artifact@v4
-        with:
-          path: "build/linux"
-          pattern: "emu-linux-*-${{ github.sha }}"
-          merge-multiple: true
-
-      # fix folder permissions! not sure why this fails
-      # nested subdirs "build/linux/release" cause permission problems
-      - name: "Give all permissions to repo folder"
-        shell: "bash"
-        working-directory: "${{ github.workspace }}"
-        run: sudo chmod -R 777 "${{ github.workspace }}" && sudo chmod 777 package_linux.sh
-
-      # print files
-      - name: "Print files"
-        shell: "bash"
-        working-directory: "${{ github.workspace }}"
+      - name: Run GBE tracker
+        if: env.SKIP_RELEASE != 'true'
+        shell: pwsh
         run: |
-          ls -la build/linux/*/*
+          # Fetch latest release info
+          $release = Invoke-RestMethod -Uri "https://api.github.com/repos/Detanup01/gbe_fork/releases/latest"
+          echo "RELEASE_TAG=$($release.tag_name)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "RELEASE_NAME=$($release.name ?? $release.tag_name)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          
+          # Find and download Windows release
+          $winAsset = $release.assets | Where-Object { $_.name -like "*win*" -and $_.name -like "*release*" } | Select-Object -First 1
+          if (-not $winAsset) { Write-Error "No Windows release found"; exit 1 }
+          Invoke-WebRequest -Uri $winAsset.browser_download_url -OutFile "downloaded-release.7z"
+          
+          # Extract and setup dirs
+          Remove-Item -Path @("extract", "release") -Recurse -Force -ErrorAction SilentlyContinue
+          New-Item -Path "release" -ItemType Directory -Force | Out-Null
+          & 7z x "downloaded-release.7z" "-oextract" -y
+          if ($LASTEXITCODE -ne 0) { Write-Error "Failed to extract archive"; exit 1 }
+          
+          # Find release folder in extracted dir
+          $releaseRoot = (Get-ChildItem -Path "extract" -Recurse -Directory | Where-Object { $_.Name -eq "release" } | Select-Object -First 1).FullName ?? "extract"
+          
+          # Copy required folders to release dir
+          @("tools/generate_interfaces", "experimental", "regular", "steam_settings.EXAMPLE") | ForEach-Object {
+              $source = Join-Path $releaseRoot $_
+              if (Test-Path $source) {
+                  $destDir = Join-Path "release" (Split-Path -Parent $_)
+                  if (!(Test-Path $destDir) -and $destDir -ne "release") {
+                      New-Item -Path $destDir -ItemType Directory -Force | Out-Null
+                  }
+                  Copy-Item -Path $source -Destination (Join-Path "release" $_) -Recurse -Force
+              }
+          }
+          
+          # Create archive and clean up
+          Remove-Item -Path "emu-win-release.7z" -Force -ErrorAction SilentlyContinue
+          & 7z a -t7z "emu-win-release.7z" "release" -mx=9 -m0=LZMA2 -mmt=on
+          Remove-Item -Path @("extract", "downloaded-release.7z") -Recurse -Force
 
-      # downlaod ubuntu packages
-      - name: "Download required Ubuntu packages"
-        shell: "bash"
-        working-directory: "${{ github.workspace }}"
-        run: |
-          sudo apt update || exit 1
-          sudo apt install tar -y || exit 1
-
-      # package (release mode)
-      - name: "Package build (release)"
-        shell: "bash"
-        working-directory: "${{ github.workspace }}"
-        run: ./package_linux.sh gmake2/release
-
-      # package (debug mode)
-      - name: "Package build (debug)"
-        shell: "bash"
-        working-directory: "${{ github.workspace }}"
-        run: ./package_linux.sh gmake2/debug 1
-
-      # release (debug + release modes) if this is a tag push
-      - name: "Release"
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
+      - name: Create GitHub Release
+        if: env.SKIP_RELEASE != 'true'
+        uses: softprops/action-gh-release@v1
         with:
-          files: "build/package/linux/**/*"
-
-      # upload artifacts/packages if this is a manual run
-      - name: "Upload release package"
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: "release-emu-linux-release-${{ github.sha }}"
-          path: "build/package/linux/gmake2/*release*"
-          if-no-files-found: "error"
-          compression-level: 0
-          retention-days: 7
-
-      - name: "Upload debug package"
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: "release-emu-linux-debug-${{ github.sha }}"
-          path: "build/package/linux/gmake2/*debug*"
-          if-no-files-found: "error"
-          compression-level: 0
-          retention-days: 7
-
-  migrate_gse_script-win:
-    name: "Migrate GSE win"
-    if: ${{ !cancelled() }}
-    uses: "./.github/workflows/migrate_gse-build-win.yml"
-
-  migrate_gse_script-win-prep:
-    needs: ["migrate_gse_script-win"]
-    runs-on: "windows-2022"
-    steps:
-      # on Windows Git will auto change line ending to CRLF, not preferable
-      - name: "Ensure LF line ending"
-        shell: "cmd"
-        working-directory: "${{ github.workspace }}"
-        run: |
-          git config --local core.autocrlf false
-          git config --system core.autocrlf false
-          git config --global core.autocrlf false
-
-      # we need branch because it has package scripts
-      - name: "Checkout branch"
-        uses: actions/checkout@v4
-
-      - name: "Clone third-party deps (deps/win)"
-        uses: actions/checkout@v4
-        with:
-          ref: "third-party/deps/win"
-          path: "${{env.THIRD_PARTY_BASE_DIR}}/deps/win"
-
-      # download artifacts
-      - name: "Download script build artifacts (Win)"
-        uses: actions/download-artifact@v4
-        with:
-          path: "tools/migrate_gse/bin/win"
-          pattern: "migrate_gse-win-*"
-          merge-multiple: true
-
-      # package
-      - name: "Package script"
-        shell: "cmd"
-        working-directory: "tools/migrate_gse"
-        run: package_win.bat
-
-      # release tag
-      - name: "Release"
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: "tools/migrate_gse/bin/package/win/**/*"
-
-      # upload artifact/package if this is a manual run
-      - name: "Upload release package"
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: "release-migrate_gse-win-${{ github.sha }}"
-          path: "tools/migrate_gse/bin/package/win/**/*"
-          if-no-files-found: "error"
-          compression-level: 9
-          retention-days: 7
-
-  migrate_gse_script-linux:
-    name: Migrate GSE linux
-    if: ${{ !cancelled() }}
-    uses: "./.github/workflows/migrate_gse-build-linux.yml"
-
-  migrate_gse_script-linux-prep:
-    needs: ["migrate_gse_script-linux"]
-    runs-on: "ubuntu-22.04"
-    steps:
-      # we need branch because it has package scripts
-      - name: "Checkout branch"
-        uses: actions/checkout@v4
-
-      # download artifacts
-      - name: "Download script build artifacts (linux)"
-        uses: actions/download-artifact@v4
-        with:
-          path: "tools/migrate_gse/bin/linux"
-          pattern: "migrate_gse-linux-*"
-          merge-multiple: true
-
-      # fix folder permissions! not sure why this fails
-      # nested subdirs "build/linux/release" cause permission problems
-      - name: "Give all permissions to repo folder"
-        shell: "bash"
-        working-directory: "${{ github.workspace }}"
-        run: sudo chmod -R 777 "${{ github.workspace }}"
-
-      # package
-      - name: "Package script"
-        shell: "bash"
-        working-directory: "tools/migrate_gse"
-        run: sudo chmod 777 package_linux.sh && sudo ./package_linux.sh
-
-      # release tag
-      - name: "Release"
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: "tools/migrate_gse/bin/package/linux/**/*"
-
-      # upload artifact/package if this is a manual run
-      - name: "Upload release package"
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: "release-migrate_gse-linux-${{ github.sha }}"
-          path: "tools/migrate_gse/bin/package/linux/**/*"
-          if-no-files-found: "error"
-          compression-level: 9
-          retention-days: 7
+          name: "${{ env.RELEASE_NAME }}"
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: |
+            emu-win-release.7z
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
