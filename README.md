@@ -1,4 +1,17 @@
-## :large_orange_diamond: **This is a fork**
+## Automated Release of [Gbe Fork](https://github.com/Detanup01/gbe_fork)
+
+This is a stripped down version of the original release, created to address issues with Windows Defender flagging the original package (likely due to `steam_client_loader`)
+
+- Only essential components are included:
+  - Original DLLs
+  - Experimental DLLs
+  - Steam_settings examples
+  - Generate Interfaces tool
+
+Check the [Release Workflow](.github/workflows/release.yml) for more info.
+
+
+### :large_orange_diamond: **This is a fork**
 Fork of https://gitlab.com/Mr_Goldberg/goldberg_emulator  
 
 ### Feel free to make a PR.
