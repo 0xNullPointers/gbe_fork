@@ -1,0 +1,116 @@
+name: GBE Release
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 */2 * *'
+
+jobs:
+  gbe-release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.SYNC_PAT }}
+
+      - name: Check and sync fork with upstream
+        shell: pwsh
+        run: |
+          # Set up Git identity for commits
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+          # Add upstream remote
+          git remote remove upstream 2>$null
+          git remote add upstream https://github.com/Detanup01/gbe_fork.git
+
+          # Fetch from upstream dev branch
+          git fetch upstream dev
+
+          Write-Host "Checking if sync is needed..."
+
+          # Try to merge upstream/dev into main
+          $needSync = $false
+          git merge-base --is-ancestor HEAD upstream/dev 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "Repository needs to be synced with upstream."
+            $needSync = $true
+            git merge upstream/dev --no-edit
+            git push origin main
+            Write-Host "Sync completed successfully."
+          } else {
+            Write-Host "Repository is already up to date with upstream."
+          }
+
+          # Set environment variable based on sync status
+          echo "FORK_SYNCED=$needSync" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Check existing releases
+        id: check_release
+        shell: pwsh
+        run: |
+          # Check if source release tag exists
+          $sourceTag = (Invoke-RestMethod -Uri "https://api.github.com/repos/Detanup01/gbe_fork/releases/latest").tag_name
+          try {
+            Invoke-RestMethod -Uri "https://api.github.com/repos/${{ github.repository }}/releases/tags/$sourceTag" -ErrorAction Stop
+            echo "SKIP_RELEASE=true" | Out-File -FilePath $env:GITHUB_ENV -Append
+          } catch {
+            echo "SKIP_RELEASE=false" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
+
+      - name: Run GBE tracker
+        if: env.SKIP_RELEASE != 'true'
+        shell: pwsh
+        run: |
+          # Fetch latest release info
+          $release = Invoke-RestMethod -Uri "https://api.github.com/repos/Detanup01/gbe_fork/releases/latest"
+          echo "RELEASE_TAG=$($release.tag_name)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "RELEASE_NAME=$($release.name ?? $release.tag_name)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+          # Find and download Windows release
+          $winAsset = $release.assets | Where-Object { $_.name -like "*win*" -and $_.name -like "*release*" } | Select-Object -First 1
+          if (-not $winAsset) { Write-Error "No Windows release found"; exit 1 }
+          Invoke-WebRequest -Uri $winAsset.browser_download_url -OutFile "downloaded-release.7z"
+
+          # Extract and setup dirs
+          Remove-Item -Path @("extract", "release") -Recurse -Force -ErrorAction SilentlyContinue
+          New-Item -Path "release" -ItemType Directory -Force | Out-Null
+          & 7z x "downloaded-release.7z" "-oextract" -y
+          if ($LASTEXITCODE -ne 0) { Write-Error "Failed to extract archive"; exit 1 }
+
+          # Find release folder in extracted dir
+          $releaseRoot = (Get-ChildItem -Path "extract" -Recurse -Directory | Where-Object { $_.Name -eq "release" } | Select-Object -First 1).FullName ?? "extract"
+
+          # Copy required folders to release dir
+          @("tools/generate_interfaces", "experimental", "regular", "steam_settings.EXAMPLE") | ForEach-Object {
+              $source = Join-Path $releaseRoot $_
+              if (Test-Path $source) {
+                  $destDir = Join-Path "release" (Split-Path -Parent $_)
+                  if (!(Test-Path $destDir) -and $destDir -ne "release") {
+                      New-Item -Path $destDir -ItemType Directory -Force | Out-Null
+                  }
+                  Copy-Item -Path $source -Destination (Join-Path "release" $_) -Recurse -Force
+              }
+          }
+
+          # Create archive and clean up
+          Remove-Item -Path "emu-win-release.7z" -Force -ErrorAction SilentlyContinue
+          & 7z a -t7z "emu-win-release.7z" "release" -mx=9 -m0=LZMA2 -mmt=on
+          Remove-Item -Path @("extract", "downloaded-release.7z") -Recurse -Force
+
+      - name: Create GitHub Release
+        if: env.SKIP_RELEASE != 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "${{ env.RELEASE_NAME }}"
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: |
+            emu-win-release.7z
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
