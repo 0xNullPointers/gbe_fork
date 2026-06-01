@@ -31,19 +31,23 @@ jobs:
           # Fetch from upstream dev branch
           git fetch upstream dev
 
+          # Get current branch name
+          $currentBranch = git branch --show-current
+          Write-Host "Current branch: $currentBranch"
+
           Write-Host "Checking if sync is needed..."
 
-          # Try to merge upstream/dev into main
+          # Check if upstream/dev is merged into current branch
           $needSync = $false
-          git merge-base --is-ancestor HEAD upstream/dev 2>$null
+          git merge-base --is-ancestor upstream/dev HEAD 2>$null
           if ($LASTEXITCODE -ne 0) {
-            Write-Host "Repository needs to be synced with upstream."
+            Write-Host "Repository needs to be synced with upstream/dev."
             $needSync = $true
             git merge upstream/dev --no-edit
-            git push origin main
+            git push origin $currentBranch
             Write-Host "Sync completed successfully."
           } else {
-            Write-Host "Repository is already up to date with upstream."
+            Write-Host "Repository is already up to date with upstream/dev."
           }
 
           # Set environment variable based on sync status
