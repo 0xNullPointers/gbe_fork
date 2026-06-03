@@ -188,7 +188,8 @@ Steam_Overlay::Steam_Overlay(Settings* settings, Local_Storage *local_storage, S
 
     show_user_info = settings->overlay_always_show_user_info;
     show_notification_history = settings->overlay_appearance.show_notification_history;
- 
+    show_achievements = settings->overlay_appearance.show_achievement_list;
+
     int i = 0;
     for (auto &lang : valid_languages) {
         if (common_helpers::str_cmp_insensitive(lang, language)) {
@@ -2023,7 +2024,7 @@ void Steam_Overlay::render_main_window()
                 };
 
                 // --- Unlocked section ---
-                if (ImGui::CollapsingHeader(translationUnlocked[current_language], ImGuiTreeNodeFlags_DefaultOpen)) {
+                if (ImGui::CollapsingHeader(translationUnlocked[current_language], settings->overlay_appearance.unlocked_expanded ? ImGuiTreeNodeFlags_DefaultOpen : ImGuiTreeNodeFlags_None)) {
                     if (unlocked_idx.empty()) {
                         ImGui::TextDisabled(translationNoUnlockedAchievements[current_language]);
                     } else {
@@ -2034,7 +2035,7 @@ void Steam_Overlay::render_main_window()
                 }
 
                 // --- Locked section ---
-                if (ImGui::CollapsingHeader(translationLocked[current_language], ImGuiTreeNodeFlags_DefaultOpen)) {
+                if (ImGui::CollapsingHeader(translationLocked[current_language], settings->overlay_appearance.locked_expanded ? ImGuiTreeNodeFlags_DefaultOpen : ImGuiTreeNodeFlags_None)) {
                     if (locked_idx.empty()) {
                         ImGui::TextDisabled(translationAllAchievementsUnlocked[current_language]);
                     } else {
