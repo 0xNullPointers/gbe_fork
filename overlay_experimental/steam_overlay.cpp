@@ -1164,9 +1164,7 @@ void Steam_Overlay::build_notifications(float width, float height)
 
         ImGui::PushStyleColor(ImGuiCol_Border, is_rare_achievement
             ? ImVec4(32.0f / 255.0f, 24.0f / 255.0f, 8.0f / 255.0f, settings_noti_alpha)
-            : is_achievement
-                ? ImVec4(0.0f, 0.0f, 0.0f, settings_noti_alpha)
-                : ImVec4(0, 0, 0, settings_noti_alpha));
+            : ImVec4(0, 0, 0, settings_noti_alpha));
         ImGui::PushStyleColor(ImGuiCol_WindowBg, get_notification_bg_rgba_safe());
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255, 255, 255, settings_noti_alpha * 2));
         if (is_rare_achievement) {
