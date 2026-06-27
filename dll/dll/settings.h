@@ -155,12 +155,14 @@ struct Overlay_Appearance {
     uint32 notification_duration_achievement = 7000; // achievement unlocked duration (millisec)
     uint32 notification_duration_invitation = 8000; // friend invitation duration (millisec)
     uint32 notification_duration_chat = 4000; // sliding animation duration duration (millisec)
+    uint32 notification_duration_screenshot = 1000; // screenshot saved duration (millisec)
 
     std::string ach_unlock_datetime_format = "%Y/%m/%d - %H:%M:%S";
     bool show_notification_history = false;
     bool show_achievement_list = false;
     bool unlocked_expanded = true;
     bool locked_expanded = false;
+    bool show_playtime_in_user_info = false;
     
     float background_r = 0.12f;
     float background_g = 0.11f;
@@ -307,6 +309,10 @@ public:
     // whether to record playtime
     bool record_playtime = false;
 
+    // pause total / session playtime when the game window loses focus (ALT+TAB)
+    bool pause_total_when_unfocused = false;
+    bool pause_session_when_unfocused = false;
+
     // bypass to make SetAchievement() always return true, prevent some games from breaking
     bool achievement_bypass = false;
 
@@ -383,6 +389,10 @@ public:
     bool overlay_always_show_playtime = false;
     // keys used to toggle the overlay, default = Shift + Tab
     std::vector<std::string> overlay_toggle_keys{};
+    // 0=disable the F12 screenshot feature
+    // default=1
+    bool enable_screenshot = true;
+    std::vector<std::string> overlay_screenshot_keys{};
     // minimum time interval between achievement notifications (in milliseconds)
     int achievement_notification_delay_ms = 0;
 

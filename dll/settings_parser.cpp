@@ -217,6 +217,23 @@ static void parse_overlay_hotkeys(class Settings *settings_client, class Setting
         settings_client->overlay_toggle_keys = combo;
         settings_server->overlay_toggle_keys = combo;
     }
+
+    auto screenshot_str = ini.GetValue("overlay::hotkeys", "screenshot_combo", "f12");
+    if (screenshot_str && screenshot_str[0]) {
+        auto combo = common_helpers::str_split(screenshot_str, "+");
+        std::for_each(combo.begin(), combo.end(),
+            [](std::string &item){ item = common_helpers::str_strip(item); }
+        );
+        combo.erase(
+            std::remove_if(
+                combo.begin(), combo.end(),
+                [](const std::string& item) { return item.empty(); }
+            ),
+            combo.end()
+        );
+        settings_client->overlay_screenshot_keys = combo;
+        settings_server->overlay_screenshot_keys = combo;
+    }
 }
 
 // overlay::appearance
@@ -374,6 +391,10 @@ static void load_overlay_appearance(class Settings *settings_client, class Setti
                 uint32 time = (uint32)(std::stof(value, NULL) * 1000.0f); // convert sec to milli
                 settings_client->overlay_appearance.notification_duration_chat = time;
                 settings_server->overlay_appearance.notification_duration_chat = time;
+            } else if (name.compare("Notification_Duration_Screenshot") == 0) {
+                uint32 time = (uint32)(std::stof(value, NULL) * 1000.0f); // convert sec to milli
+                settings_client->overlay_appearance.notification_duration_screenshot = time;
+                settings_server->overlay_appearance.notification_duration_screenshot = time;
             } else if (name.compare("Achievement_Unlock_Datetime_Format") == 0) {
                 settings_client->overlay_appearance.ach_unlock_datetime_format = value;
                 settings_server->overlay_appearance.ach_unlock_datetime_format = value;
@@ -393,6 +414,10 @@ static void load_overlay_appearance(class Settings *settings_client, class Setti
                 bool expand = (std::stol(value, NULL) != 0);
                 settings_client->overlay_appearance.locked_expanded = expand;
                 settings_server->overlay_appearance.locked_expanded = expand;
+            } else if (name.compare("Show_Playtime_In_User_Info") == 0) {
+                bool show = (std::stol(value, NULL) != 0);
+                settings_client->overlay_appearance.show_playtime_in_user_info = show;
+                settings_server->overlay_appearance.show_playtime_in_user_info = show;
             } else if (name.compare("Achievement_Notification_Delay") == 0) {
                 float delay_sec = std::stof(value, NULL);
                 settings_client->achievement_notification_delay_ms = static_cast<int>(delay_sec * 1000.0f);
@@ -1651,6 +1676,9 @@ static void parse_overlay_general_config(class Settings *settings_client, class 
     settings_client->overlay_always_show_playtime = ini.GetBoolValue("overlay::general", "overlay_always_show_playtime", settings_client->overlay_always_show_playtime);
     settings_server->overlay_always_show_playtime = ini.GetBoolValue("overlay::general", "overlay_always_show_playtime", settings_server->overlay_always_show_playtime);
 
+    settings_client->enable_screenshot = ini.GetBoolValue("overlay::general", "enable_screenshot", settings_client->enable_screenshot);
+    settings_server->enable_screenshot = ini.GetBoolValue("overlay::general", "enable_screenshot", settings_server->enable_screenshot);
+
     {
         auto val = ini.GetLongValue("overlay::general", "fps_averaging_window", settings_client->overlay_fps_avg_window);
         if (val > 0) {
@@ -1778,6 +1806,11 @@ static void parse_stats_features(class Settings *settings_client, class Settings
 
     settings_client->record_playtime = ini.GetBoolValue("main::stats", "record_playtime", settings_client->record_playtime);
     settings_server->record_playtime = ini.GetBoolValue("main::stats", "record_playtime", settings_server->record_playtime);
+
+    settings_client->pause_total_when_unfocused = ini.GetBoolValue("main::stats", "pause_total_when_unfocused", settings_client->pause_total_when_unfocused);
+    settings_server->pause_total_when_unfocused = ini.GetBoolValue("main::stats", "pause_total_when_unfocused", settings_server->pause_total_when_unfocused);
+    settings_client->pause_session_when_unfocused = ini.GetBoolValue("main::stats", "pause_session_when_unfocused", settings_client->pause_session_when_unfocused);
+    settings_server->pause_session_when_unfocused = ini.GetBoolValue("main::stats", "pause_session_when_unfocused", settings_server->pause_session_when_unfocused);
 }
 
 
