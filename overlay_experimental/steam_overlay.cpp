@@ -411,6 +411,12 @@ void Steam_Overlay::create_fonts()
         font_builder.AddText(translationFriends[i]);
         font_builder.AddText(translationNoNotification[i]);
         font_builder.AddText(translationClearAll[i]);
+        font_builder.AddText(translationHistoryChat[i]);
+        font_builder.AddText(translationHistoryInvite[i]);
+        font_builder.AddText(translationHistoryAchievement[i]);
+        font_builder.AddText(translationHistoryProgress[i]);
+        font_builder.AddText(translationHistoryAutoInvite[i]);
+        font_builder.AddText(translationHistoryScreenshot[i]);
         font_builder.AddText(translationAchievementWindow[i]);
         font_builder.AddText(translationListOfAchievements[i]);
         font_builder.AddText(translationAchievements[i]);
@@ -2048,12 +2054,12 @@ void Steam_Overlay::render_main_window()
                         // Type label
                         const char *type_label = "?";
                         switch ((notification_type)it->type) {
-                            case notification_type::message: type_label = "Chat"; break;
-                            case notification_type::invite: type_label = "Invite"; break;
-                            case notification_type::achievement: type_label = "Achievement"; break;
-                            case notification_type::achievement_progress: type_label = "Progress"; break;
-                            case notification_type::auto_accept_invite: type_label = "Auto-Invite"; break;
-                            case notification_type::screenshot: type_label = "Screenshot"; break;
+                            case notification_type::message: type_label = translationHistoryChat[current_language]; break;
+                            case notification_type::invite: type_label = translationHistoryInvite[current_language]; break;
+                            case notification_type::achievement: type_label = translationHistoryAchievement[current_language]; break;
+                            case notification_type::achievement_progress: type_label = translationHistoryProgress[current_language]; break;
+                            case notification_type::auto_accept_invite: type_label = translationHistoryAutoInvite[current_language]; break;
+                            case notification_type::screenshot: type_label = translationHistoryScreenshot[current_language]; break;
                         }
 
                         // For achievements the message contains "title\ndescription"
