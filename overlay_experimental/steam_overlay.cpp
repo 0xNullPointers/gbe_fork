@@ -1956,7 +1956,7 @@ void Steam_Overlay::render_main_window()
 
         ImGui::Spacing();
 
-        if (settings->overlay_show_btn_user_info) {
+        if (settings->overlay_show_button_user_info) {
             ImGui::SameLine();
             // user clicked on "toggle user info"
             if (ImGui::Button(translationToggleUserInfo[current_language])) {
@@ -1964,7 +1964,7 @@ void Steam_Overlay::render_main_window()
             }
         }
 
-        if (settings->overlay_show_btn_achievements) {
+        if (settings->overlay_show_button_achievements) {
             ImGui::SameLine();
             // user clicked on "show achievements"
             if (ImGui::Button(translationShowAchievements[current_language])) {
@@ -1972,7 +1972,7 @@ void Steam_Overlay::render_main_window()
             }
         }
 
-        if (settings->overlay_show_btn_test_achievement) {
+        if (settings->overlay_show_button_test_achievement) {
             ImGui::SameLine();
             // user clicked on "test achievement"
             if (ImGui::Button(translationTestAchievement[current_language])) {
@@ -1980,7 +1980,7 @@ void Steam_Overlay::render_main_window()
             }
         }
 
-        if (settings->overlay_show_btn_copy_id) {
+        if (settings->overlay_show_button_copy_id) {
             ImGui::SameLine();
             // user clicked on "copy id" on themselves
             if (ImGui::Button(translationCopyId[current_language])) {
@@ -1989,7 +1989,7 @@ void Steam_Overlay::render_main_window()
             }
         }
 
-        if (settings->overlay_show_btn_screenshots) {
+        if (settings->overlay_show_button_screenshots) {
             ImGui::SameLine();
             // user clicked on "Screenshots"
             if (ImGui::Button(translationScreenshots[current_language])) {
@@ -1997,7 +1997,7 @@ void Steam_Overlay::render_main_window()
             }
 		}
 
-        if (settings->overlay_show_btn_history) {
+        if (settings->overlay_show_button_history) {
             ImGui::SameLine();
             // user clicked on "notification history"
             if (ImGui::Button(translationHistory[current_language])) {
@@ -2005,7 +2005,7 @@ void Steam_Overlay::render_main_window()
             }
         }
 
-        if (settings->overlay_show_btn_settings) {
+        if (settings->overlay_show_button_settings) {
             ImGui::SameLine();
             // user clicked on "settings"
             if (ImGui::Button(translationSettings[current_language])) {
@@ -2016,7 +2016,7 @@ void Steam_Overlay::render_main_window()
         ImGui::Spacing();
         ImGui::Spacing();
         // user clicked on "FPS"
-        if (settings->overlay_show_chb_fps) {
+        if (settings->overlay_show_checkbox_fps) {
             ImGui::SameLine();
             if (ImGui::Checkbox(translationFpsCheckbox[current_language], &stats.show_fps)) {
                 allow_renderer_frame_processing(stats.show_fps);
@@ -2025,7 +2025,7 @@ void Steam_Overlay::render_main_window()
         
         // user clicked on "Frametime"
         ImGui::SameLine();
-        if (settings->overlay_show_chb_frametime) {
+        if (settings->overlay_show_checkbox_frametime) {
             if (ImGui::Checkbox(translationFrametimeCheckbox[current_language], &stats.show_frametime)) {
                 allow_renderer_frame_processing(stats.show_frametime);
             }
@@ -2033,7 +2033,7 @@ void Steam_Overlay::render_main_window()
         
         // user clicked on "Playtime"
         ImGui::SameLine();
-        if (settings->overlay_show_chb_playtime) {
+        if (settings->overlay_show_checkbox_playtime) {
             if (ImGui::Checkbox(translationPlaytimeCheckbox[current_language], &stats.show_playtime)) {
                 allow_renderer_frame_processing(stats.show_playtime);
             }
