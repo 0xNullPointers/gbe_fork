@@ -376,6 +376,14 @@ public:
     // disable all overlay warnings
     bool disable_overlay_warning_any = false;
     Overlay_Appearance overlay_appearance{};
+    // toggle overlay buttons
+    bool overlay_show_btn_user_info = true;
+    bool overlay_show_btn_achievements = true;
+    bool overlay_show_btn_test_achievement = true;
+    bool overlay_show_btn_copy_id = true;
+    bool overlay_show_btn_screenshots = true;
+    bool overlay_show_btn_history = true;
+    bool overlay_show_btn_settings = true;
     // whether to auto accept any overlay invites
     bool auto_accept_any_overlay_invites = false;
     // list of user steam IDs to auto-accept invites from
