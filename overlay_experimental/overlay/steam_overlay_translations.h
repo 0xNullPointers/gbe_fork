@@ -2503,7 +2503,7 @@ const char translationHistoryProgress[TRANSLATION_NUMBER_OF_LANGUAGES][TRANSLATI
   u8"Progress",
 
 	// 26 - Turkish
-  u8"İlerleme",
+  u8"Başarım İlerlemesi",
 
 	// 27 - Ukrainian
   u8"Progress",
