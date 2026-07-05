@@ -3367,7 +3367,7 @@ const char translationListOfAchievements[TRANSLATION_NUMBER_OF_LANGUAGES][TRANSL
   u8"List of achievements",
 
 	// 26 - Turkish
-  u8"Başarımların listesi",
+  u8"Başarımların Listesi",
 
 	// 27 - Ukrainian
   u8"List of achievements",
