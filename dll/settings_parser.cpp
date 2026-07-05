@@ -1664,6 +1664,27 @@ static void parse_overlay_general_config(class Settings *settings_client, class 
     settings_client->disable_overlay_warning_local_save = ini.GetBoolValue("overlay::general", "disable_warning_local_save", settings_client->disable_overlay_warning_local_save);
     settings_server->disable_overlay_warning_local_save = ini.GetBoolValue("overlay::general", "disable_warning_local_save", settings_server->disable_overlay_warning_local_save);
 
+    settings_client->overlay_show_btn_user_info = ini.GetBoolValue("overlay::general", "show_btn_user_info", settings_client->overlay_show_btn_user_info);
+    settings_server->overlay_show_btn_user_info = ini.GetBoolValue("overlay::general", "show_btn_user_info", settings_server->overlay_show_btn_user_info);
+
+    settings_client->overlay_show_btn_achievements = ini.GetBoolValue("overlay::general", "show_btn_achievements", settings_client->overlay_show_btn_achievements);
+    settings_server->overlay_show_btn_achievements = ini.GetBoolValue("overlay::general", "show_btn_achievements", settings_server->overlay_show_btn_achievements);
+
+    settings_client->overlay_show_btn_test_achievement = ini.GetBoolValue("overlay::general", "show_btn_test_achievement", settings_client->overlay_show_btn_test_achievement);
+    settings_server->overlay_show_btn_test_achievement = ini.GetBoolValue("overlay::general", "show_btn_test_achievement", settings_server->overlay_show_btn_test_achievement);
+
+    settings_client->overlay_show_btn_copy_id = ini.GetBoolValue("overlay::general", "show_btn_copy_id", settings_client->overlay_show_btn_copy_id);
+    settings_server->overlay_show_btn_copy_id = ini.GetBoolValue("overlay::general", "show_btn_copy_id", settings_server->overlay_show_btn_copy_id);
+
+    settings_client->overlay_show_btn_screenshots = ini.GetBoolValue("overlay::general", "show_btn_screenshots", settings_client->overlay_show_btn_screenshots);
+    settings_server->overlay_show_btn_screenshots = ini.GetBoolValue("overlay::general", "show_btn_screenshots", settings_server->overlay_show_btn_screenshots);
+
+    settings_client->overlay_show_btn_history = ini.GetBoolValue("overlay::general", "show_btn_history", settings_client->overlay_show_btn_history);
+    settings_server->overlay_show_btn_history = ini.GetBoolValue("overlay::general", "show_btn_history", settings_server->overlay_show_btn_history);
+
+    settings_client->overlay_show_btn_settings = ini.GetBoolValue("overlay::general", "show_btn_settings", settings_client->overlay_show_btn_settings);
+    settings_server->overlay_show_btn_settings = ini.GetBoolValue("overlay::general", "show_btn_settings", settings_server->overlay_show_btn_settings);
+    
     settings_client->overlay_upload_achs_icons_to_gpu = ini.GetBoolValue("overlay::general", "upload_achievements_icons_to_gpu", settings_client->overlay_upload_achs_icons_to_gpu);
     settings_server->overlay_upload_achs_icons_to_gpu = ini.GetBoolValue("overlay::general", "upload_achievements_icons_to_gpu", settings_server->overlay_upload_achs_icons_to_gpu);
 

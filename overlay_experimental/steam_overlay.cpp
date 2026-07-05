@@ -1956,49 +1956,63 @@ void Steam_Overlay::render_main_window()
 
         ImGui::Spacing();
 
-        ImGui::SameLine();
-        // user clicked on "toggle user info"
-        if (ImGui::Button(translationToggleUserInfo[current_language])) {
-            show_user_info = !show_user_info;
+        if (settings->overlay_show_btn_user_info) {
+            ImGui::SameLine();
+            // user clicked on "toggle user info"
+            if (ImGui::Button(translationToggleUserInfo[current_language])) {
+                show_user_info = !show_user_info;
+            }
         }
 
-        ImGui::SameLine();
-        // user clicked on "show achievements"
-        if (ImGui::Button(translationShowAchievements[current_language])) {
-            show_achievements = !show_achievements;
+        if (settings->overlay_show_btn_achievements) {
+            ImGui::SameLine();
+            // user clicked on "show achievements"
+            if (ImGui::Button(translationShowAchievements[current_language])) {
+                show_achievements = !show_achievements;
+            }
         }
 
-        ImGui::SameLine();
-        // user clicked on "test achievement"
-        if (ImGui::Button(translationTestAchievement[current_language])) {
-            show_test_achievement();
+        if (settings->overlay_show_btn_test_achievement) {
+            ImGui::SameLine();
+            // user clicked on "test achievement"
+            if (ImGui::Button(translationTestAchievement[current_language])) {
+                show_test_achievement();
+            }
         }
 
-        ImGui::SameLine();
-        // user clicked on "copy id" on themselves
-        if (ImGui::Button(translationCopyId[current_language])) {
-            auto friend_id_str = std::to_string(settings->get_local_steam_id().ConvertToUint64());
-            ImGui::SetClipboardText(friend_id_str.c_str());
+        if (settings->overlay_show_btn_copy_id) {
+            ImGui::SameLine();
+            // user clicked on "copy id" on themselves
+            if (ImGui::Button(translationCopyId[current_language])) {
+                auto friend_id_str = std::to_string(settings->get_local_steam_id().ConvertToUint64());
+                ImGui::SetClipboardText(friend_id_str.c_str());
+            }
         }
 
-        ImGui::SameLine();
-        // user clicked on "Screenshots"
-        if (ImGui::Button(translationScreenshots[current_language])) {
-            show_screenshots_window = !show_screenshots_window;
-        }
-		
-        ImGui::SameLine();
-        // user clicked on "notification history"
-        if (ImGui::Button(translationHistory[current_language])) {
-            show_notification_history = !show_notification_history;
+        if (settings->overlay_show_btn_screenshots) {
+            ImGui::SameLine();
+            // user clicked on "Screenshots"
+            if (ImGui::Button(translationScreenshots[current_language])) {
+                show_screenshots_window = !show_screenshots_window;
+            }
+		}
+
+        if (settings->overlay_show_btn_history) {
+            ImGui::SameLine();
+            // user clicked on "notification history"
+            if (ImGui::Button(translationHistory[current_language])) {
+                show_notification_history = !show_notification_history;
+            }
         }
 
-        ImGui::SameLine();
-        // user clicked on "settings"
-        if (ImGui::Button(translationSettings[current_language])) {
-            show_settings = !show_settings;
+        if (settings->overlay_show_btn_settings) {
+            ImGui::SameLine();
+            // user clicked on "settings"
+            if (ImGui::Button(translationSettings[current_language])) {
+                show_settings = !show_settings;
+            }
         }
-
+        
         ImGui::Spacing();
         ImGui::Spacing();
         // user clicked on "FPS"
