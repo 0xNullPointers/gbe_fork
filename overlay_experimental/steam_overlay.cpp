@@ -2016,21 +2016,29 @@ void Steam_Overlay::render_main_window()
         ImGui::Spacing();
         ImGui::Spacing();
         // user clicked on "FPS"
-        ImGui::SameLine();
-        if (ImGui::Checkbox(translationFpsCheckbox[current_language], &stats.show_fps)) {
-            allow_renderer_frame_processing(stats.show_fps);
+        if (settings->overlay_show_chb_fps) {
+            ImGui::SameLine();
+            if (ImGui::Checkbox(translationFpsCheckbox[current_language], &stats.show_fps)) {
+                allow_renderer_frame_processing(stats.show_fps);
+            }
         }
+        
         // user clicked on "Frametime"
         ImGui::SameLine();
-        if (ImGui::Checkbox(translationFrametimeCheckbox[current_language], &stats.show_frametime)) {
-            allow_renderer_frame_processing(stats.show_frametime);
+        if (settings->overlay_show_chb_frametime) {
+            if (ImGui::Checkbox(translationFrametimeCheckbox[current_language], &stats.show_frametime)) {
+                allow_renderer_frame_processing(stats.show_frametime);
+            }
         }
+        
         // user clicked on "Playtime"
         ImGui::SameLine();
-        if (ImGui::Checkbox(translationPlaytimeCheckbox[current_language], &stats.show_playtime)) {
-            allow_renderer_frame_processing(stats.show_playtime);
+        if (settings->overlay_show_chb_playtime) {
+            if (ImGui::Checkbox(translationPlaytimeCheckbox[current_language], &stats.show_playtime)) {
+                allow_renderer_frame_processing(stats.show_playtime);
+            }
         }
-
+        
         ImGui::Spacing();
         ImGui::Spacing();
 
