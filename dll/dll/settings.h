@@ -384,6 +384,9 @@ public:
     bool overlay_show_btn_screenshots = true;
     bool overlay_show_btn_history = true;
     bool overlay_show_btn_settings = true;
+    bool overlay_show_chb_fps = true;
+    bool overlay_show_chb_frametime = true;
+    bool overlay_show_chb_playtime = true;
     // whether to auto accept any overlay invites
     bool auto_accept_any_overlay_invites = false;
     // list of user steam IDs to auto-accept invites from
