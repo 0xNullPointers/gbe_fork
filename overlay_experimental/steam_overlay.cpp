@@ -405,6 +405,7 @@ void Steam_Overlay::create_fonts()
         font_builder.AddText(translationShowAchievements[i]);
         font_builder.AddText(translationSettings[i]);
         font_builder.AddText(translationHistory[i]);
+		font_builder.AddText(translationScreenshots[i]);
         font_builder.AddText(translationFriends[i]);
         font_builder.AddText(translationNoNotification[i]);
         font_builder.AddText(translationClearAll[i]);
@@ -432,6 +433,26 @@ void Steam_Overlay::create_fonts()
         font_builder.AddText(translationSteamOverlayURL[i]);
         font_builder.AddText(translationClose[i]);
         font_builder.AddText(translationPlaying[i]);
+		font_builder.AddText(translationScreenshotSaved[i]);
+		font_builder.AddText(translationUnpinAll[i]);
+		font_builder.AddText(translationDeleteSelected[i]);
+		font_builder.AddText(translationOpenFolder[i]);
+		font_builder.AddText(translationNoScreenshotsYet[i]);
+		font_builder.AddText(translationDelete[i]);
+		font_builder.AddText(translationScreenshotPreview[i]);
+		font_builder.AddText(translationPrev[i]);
+		font_builder.AddText(translationPin[i]);
+		font_builder.AddText(translationCrop[i]);
+		font_builder.AddText(translationNext[i]);
+		font_builder.AddText(translationDeleteThisScreenshot[i]);
+		font_builder.AddText(translationDeleteAllScelectedScreenshots[i]);
+		font_builder.AddText(translationYes[i]);
+		font_builder.AddText(translationNo[i]);
+		font_builder.AddText(translationConfirmDelete[i]);
+		font_builder.AddText(translationConfirm[i]);
+		font_builder.AddText(translationCancel[i]);
+		font_builder.AddText(translationPinnedScreenshots[i]);
+		font_builder.AddText(translationOpacity[i]);
         font_builder.AddText(translationAutoAcceptFriendInvite[i]);
         font_builder.AddText(translationFpsCheckbox[i]);
         font_builder.AddText(translationFpsDisplay[i]);
@@ -1844,11 +1865,11 @@ void Steam_Overlay::render_main_window()
         }
 
         ImGui::SameLine();
-        // user clicked on "settings"
-        if (ImGui::Button(translationSettings[current_language])) {
-            show_settings = !show_settings;
+        // user clicked on "Screenshots"
+        if (ImGui::Button(translationScreenshots[current_language])) {
+            show_screenshots_window = !show_screenshots_window;
         }
-
+		
         ImGui::SameLine();
         // user clicked on "notification history"
         if (ImGui::Button(translationHistory[current_language])) {
@@ -1856,9 +1877,9 @@ void Steam_Overlay::render_main_window()
         }
 
         ImGui::SameLine();
-        // user clicked on "Screenshots"
-        if (ImGui::Button("Screenshots")) {
-            show_screenshots_window = !show_screenshots_window;
+        // user clicked on "settings"
+        if (ImGui::Button(translationSettings[current_language])) {
+            show_settings = !show_settings;
         }
 
         ImGui::Spacing();
@@ -2803,13 +2824,18 @@ void Steam_Overlay::process_captured_screenshots()
 #else
         localtime_r(&now_time, &local_tm);
 #endif
-        std::strftime(buff, sizeof(buff), "%Y-%m-%d_%H-%M-%S", &local_tm);
+        std::strftime(buff, sizeof(buff), settings->overlay_appearance.ach_unlock_datetime_format.c_str(), &local_tm);
         std::string filename = buff;
+        for (char& c : filename) {
+            if (c == ':' || c == '/' || c == '\\' || c == '*' || c == '?' || c == '"' || c == '<' || c == '>' || c == '|') {
+                c = '.';
+            }
+        }
         filename += ".png";
 
         if (local_storage->save_screenshot(filename, item.pixels_rgb.data(), item.width, item.height, 4)) {
             PRINT_DEBUG("Screenshot saved: %s", filename.c_str());
-            submit_notification(notification_type::screenshot, "Screenshot saved: " + filename);
+            submit_notification(notification_type::screenshot, translationScreenshotSaved[current_language] + filename);
         } else {
             PRINT_DEBUG("Failed to save screenshot!");
         }
@@ -2907,7 +2933,7 @@ void Steam_Overlay::render_gallery_window()
     ImGui::SetNextWindowSizeConstraints(ImVec2(400, 300), ImVec2(8192, 8192));
     ImGui::SetNextWindowSize(ImVec2(700, 500), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowBgAlpha(1.0f);
-    if (ImGui::Begin("Screenshots", &show_screenshots_window)) {
+    if (ImGui::Begin(translationScreenshots[current_language], &show_screenshots_window)) {
         // Delete/Unpin toolbar
         bool has_selection = false;
         for (auto& item : screenshot_items) {
@@ -2915,14 +2941,14 @@ void Steam_Overlay::render_gallery_window()
         }
 
         if (!pinned_screenshots.empty()) {
-            if (ImGui::SmallButton("Unpin all")) {
+            if (ImGui::Button(translationUnpinAll[current_language])) {
                 unpin_all_screenshots();
             }
             ImGui::SameLine();
         }
 
         if (has_selection) {
-            if (ImGui::SmallButton("Delete selected")) {
+            if (ImGui::Button(translationDeleteSelected[current_language])) {
                 delete_all_selected = true;
                 show_delete_confirmation = true;
                 delete_confirm_open_active = true;
@@ -2931,7 +2957,7 @@ void Steam_Overlay::render_gallery_window()
         }
 
         if (!screenshot_items.empty()) {
-            if (ImGui::SmallButton("Open Folder")) {
+            if (ImGui::Button(translationOpenFolder[current_language])) {
                 std::string path = local_storage->get_path(Local_Storage::screenshots_folder);
 #ifdef __WINDOWS__
                 auto wpath = common_helpers::to_wstr(path);
@@ -2952,7 +2978,7 @@ void Steam_Overlay::render_gallery_window()
             if (!screenshots_loaded)
                 refresh_screenshots_list();
             if (screenshot_items.empty()) {
-                ImGui::TextDisabled("No screenshots yet");
+                ImGui::TextDisabled(translationNoScreenshotsYet[current_language]);
             }
         }
 
@@ -3010,7 +3036,7 @@ void Steam_Overlay::render_gallery_window()
 
                 // Right-click context menu
                 if (ImGui::BeginPopupContextItem("##screenshot_ctx")) {
-                    if (ImGui::Selectable("Pin")) {
+                    if (ImGui::Selectable(translationPin[current_language])) {
                         PinnedScreenshot pin;
                         pin.id = next_pin_id++;
                         pin.path = item.full_path;
@@ -3037,7 +3063,7 @@ void Steam_Overlay::render_gallery_window()
                         pin.focus_requested = true;
                         pinned_screenshots.push_back(std::move(pin));
                     }
-                    if (ImGui::Selectable("Delete")) {
+                    if (ImGui::Selectable(translationDelete[current_language])) {
                         single_delete_path = item.full_path;
                         delete_all_selected = false;
                         show_delete_confirmation = true;
@@ -3071,7 +3097,7 @@ void Steam_Overlay::render_gallery_window()
         if (!preview_screenshot_path.empty() || preview_open_active) {
             // Open the popup on the first frame only (not while navigating via Prev/Next)
             if (!preview_screenshot_path.empty() && !preview_open_active) {
-                ImGui::OpenPopup("Screenshot Preview");
+                ImGui::OpenPopup(translationScreenshotPreview[current_language]);
                 preview_open_active = true;
 
                 // Find the index for Prev/Next navigation
@@ -3099,7 +3125,7 @@ void Steam_Overlay::render_gallery_window()
                 preview_flags |= ImGuiWindowFlags_NoMove;
             }
             bool preview_modal_open = true;
-            if (ImGui::BeginPopupModal("Screenshot Preview", &preview_modal_open, preview_flags)) {
+            if (ImGui::BeginPopupModal(translationScreenshotPreview[current_language], &preview_modal_open, preview_flags)) {
                 // Navigate to a different screenshot
                 // (path changed via Prev/Next → unload current texture so it reloads next frame)
                 if (preview_texture && preview_index >= 0 && preview_index < (int)screenshot_items.size() &&
@@ -3231,7 +3257,7 @@ void Steam_Overlay::render_gallery_window()
 #else
                                 localtime_r(&src_item.mtime, &local_tm);
 #endif
-                                std::strftime(time_buf, sizeof(time_buf), "%Y-%m-%d %H:%M:%S", &local_tm);
+                                std::strftime(time_buf, sizeof(time_buf), settings->overlay_appearance.ach_unlock_datetime_format.c_str(), &local_tm);
                                 ImGui::TextUnformatted(time_buf);
                             } else {
                                 ImGui::TextUnformatted(src_item.filename.c_str());
@@ -3242,7 +3268,7 @@ void Steam_Overlay::render_gallery_window()
                         ImGui::BeginGroup();
 
                         // Prev — always visible, wraps to last
-                        if (ImGui::Button("< Prev")) {
+                        if (ImGui::Button(translationPrev[current_language])) {
                             if (preview_index <= 0)
                                 preview_index = (int)screenshot_items.size() - 1;
                             else
@@ -3253,7 +3279,7 @@ void Steam_Overlay::render_gallery_window()
                         ImGui::Text("|");
                         ImGui::SameLine();
 
-                        if (ImGui::Button("Pin")) {
+                        if (ImGui::Button(translationPin[current_language])) {
                             PinnedScreenshot pin;
                             pin.id = next_pin_id++;
                             pin.path = screenshot_items[preview_index].full_path;
@@ -3295,13 +3321,13 @@ void Steam_Overlay::render_gallery_window()
                         }
                         ImGui::SameLine();
 
-                        if (ImGui::Button("Crop")) {
+                        if (ImGui::Button(translationCrop[current_language])) {
                             preview_crop_rect_prev = preview_crop_rect;
                             preview_crop_mode = true;
                         }
                         ImGui::SameLine();
 
-                        if (!preview_delete_pending && ImGui::Button("Delete")) {
+                        if (!preview_delete_pending && ImGui::Button(translationDelete[current_language])) {
                             preview_delete_pending = true;
                         }
                         ImGui::SameLine();
@@ -3310,7 +3336,7 @@ void Steam_Overlay::render_gallery_window()
                         ImGui::SameLine();
 
                         // Next — always visible, wraps to first
-                        if (ImGui::Button("Next >")) {
+                        if (ImGui::Button(translationNext[current_language])) {
                             if (preview_index >= (int)screenshot_items.size() - 1)
                                 preview_index = 0;
                             else
@@ -3323,9 +3349,9 @@ void Steam_Overlay::render_gallery_window()
                     // Inline delete confirmation (avoids stacking modals which closes the preview)
                     if (preview_delete_pending) {
                         ImGui::Separator();
-                        ImGui::Text("Delete this screenshot?");
+                        ImGui::Text(translationDeleteThisScreenshot[current_language]);
                         ImGui::SameLine();
-                        if (ImGui::Button("Yes")) {
+                        if (ImGui::Button(translationYes[current_language])) {
                             preview_delete_pending = false;
                             // Perform the delete inline
                             auto& del_item = screenshot_items[preview_index];
@@ -3376,7 +3402,7 @@ void Steam_Overlay::render_gallery_window()
                             }
                         }
                         ImGui::SameLine();
-                        if (ImGui::Button("No")) {
+                        if (ImGui::Button(translationNo[current_language])) {
                             preview_delete_pending = false;
                         }
                     }
@@ -3386,7 +3412,7 @@ void Steam_Overlay::render_gallery_window()
             } else {
                 // BeginPopupModal returned false. Only clear state if the popup is
                 // truly closed (X/Escape), not just covered by another window like a new pin.
-                if (preview_open_active && !ImGui::IsPopupOpen("Screenshot Preview")) {
+                if (preview_open_active && !ImGui::IsPopupOpen(translationScreenshotPreview[current_language])) {
                     clear_preview_state();
                 }
             }
@@ -3399,18 +3425,18 @@ void Steam_Overlay::render_gallery_window()
         // -- Delete confirmation modal --
         if (show_delete_confirmation || delete_confirm_open_active) {
             if (show_delete_confirmation) {
-                ImGui::OpenPopup("Confirm Delete");
+                ImGui::OpenPopup(translationConfirmDelete[current_language]);
                 delete_confirm_open_active = true;
                 show_delete_confirmation = false; // consumed - the active flag carries the state
             }
-            if (ImGui::BeginPopupModal("Confirm Delete", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+            if (ImGui::BeginPopupModal(translationConfirmDelete[current_language], nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
                 if (delete_all_selected) {
-                    ImGui::Text("Delete all selected screenshots?");
+                    ImGui::Text(translationDeleteAllScelectedScreenshots[current_language]);
                 } else {
-                    ImGui::Text("Delete this screenshot?");
+                    ImGui::Text(translationDeleteThisScreenshot[current_language]);
                 }
                 ImGui::Separator();
-                if (ImGui::Button("Yes")) {
+                if (ImGui::Button(translationYes[current_language])) {
                     if (delete_all_selected) {
                         // Delete all selected
                         for (auto& item : screenshot_items) {
@@ -3473,7 +3499,7 @@ void Steam_Overlay::render_gallery_window()
                     ImGui::CloseCurrentPopup();
                 }
                 ImGui::SameLine();
-                if (ImGui::Button("No")) {
+                if (ImGui::Button(translationNo[current_language])) {
                     ImGui::CloseCurrentPopup();
                 }
                 ImGui::EndPopup();
@@ -3651,8 +3677,8 @@ Steam_Overlay::CropAction Steam_Overlay::render_crop_editor(
     //    (via the draw list) so the buttons render on top of it.
     const float tb_fp_x = 6.0f, tb_fp_y = 4.0f;
     const float tb_gap = ImGui::GetStyle().ItemSpacing.x;
-    const ImVec2 confirm_sz = ImGui::CalcTextSize("Confirm");
-    const ImVec2 cancel_sz  = ImGui::CalcTextSize("Cancel");
+    const ImVec2 confirm_sz = ImGui::CalcTextSize(translationConfirm[current_language]);
+    const ImVec2 cancel_sz  = ImGui::CalcTextSize(translationCancel[current_language]);
     const float tb_w = (confirm_sz.x + tb_fp_x * 2) + tb_gap
                      + (cancel_sz.x  + tb_fp_x * 2);
     const float tb_h = std::max(confirm_sz.y, cancel_sz.y) + tb_fp_y * 2;
@@ -3671,11 +3697,11 @@ Steam_Overlay::CropAction Steam_Overlay::render_crop_editor(
     ImGui::PushStyleColor(ImGuiCol_Text,          ImVec4(1, 1, 1, 1));
 
     CropAction action = CropAction::Active;
-    if (ImGui::Button("Confirm")) {
+    if (ImGui::Button(translationConfirm[current_language])) {
         action = CropAction::Confirm;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Cancel")) {
+    if (ImGui::Button(translationCancel[current_language])) {
         action = CropAction::Cancel;
     }
 
@@ -3850,7 +3876,7 @@ void Steam_Overlay::render_pinned_screenshot()
             continue;
 
         char wnd_id[64];
-        snprintf(wnd_id, sizeof(wnd_id), "Pinned Screenshot###pinned_ss_%llu",
+        snprintf(wnd_id, sizeof(wnd_id), translationPinnedScreenshots[current_language],
                  (unsigned long long)pin.id);
 
         // Position (deferred until first manual move)
@@ -4025,9 +4051,9 @@ void Steam_Overlay::render_pinned_screenshot()
                 }
             } else if (show_overlay) {
                 ImGui::Separator();
-                ImGui::SliderFloat("Opacity", &pin.opacity, 0.1f, 1.0f, "%.2f");
+                ImGui::SliderFloat(translationOpacity[current_language], &pin.opacity, 0.1f, 1.0f, "%.2f");
                 ImGui::SameLine();
-                if (ImGui::Button("Crop")) {
+                if (ImGui::Button(translationCrop[current_language])) {
                     pin.crop_rect_prev = pin.crop_rect;
                     pin.crop_mode = true;
                 }
