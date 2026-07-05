@@ -1684,6 +1684,15 @@ static void parse_overlay_general_config(class Settings *settings_client, class 
 
     settings_client->overlay_show_btn_settings = ini.GetBoolValue("overlay::general", "show_btn_settings", settings_client->overlay_show_btn_settings);
     settings_server->overlay_show_btn_settings = ini.GetBoolValue("overlay::general", "show_btn_settings", settings_server->overlay_show_btn_settings);
+
+    settings_client->overlay_show_chb_fps = ini.GetBoolValue("overlay::general", "show_chb_fps", settings_client->overlay_show_chb_fps);
+    settings_server->overlay_show_chb_fps = ini.GetBoolValue("overlay::general", "show_chb_fps", settings_server->overlay_show_chb_fps);
+
+    settings_client->overlay_show_chb_frametime = ini.GetBoolValue("overlay::general", "show_chb_frametime", settings_client->overlay_show_chb_frametime);
+    settings_server->overlay_show_chb_frametime = ini.GetBoolValue("overlay::general", "show_chb_frametime", settings_server->overlay_show_chb_frametime);
+
+    settings_client->overlay_show_chb_playtime = ini.GetBoolValue("overlay::general", "show_chb_playtime", settings_client->overlay_show_chb_playtime);
+    settings_server->overlay_show_chb_playtime = ini.GetBoolValue("overlay::general", "show_chb_playtime", settings_server->overlay_show_chb_playtime);
     
     settings_client->overlay_upload_achs_icons_to_gpu = ini.GetBoolValue("overlay::general", "upload_achievements_icons_to_gpu", settings_client->overlay_upload_achs_icons_to_gpu);
     settings_server->overlay_upload_achs_icons_to_gpu = ini.GetBoolValue("overlay::general", "upload_achievements_icons_to_gpu", settings_server->overlay_upload_achs_icons_to_gpu);
