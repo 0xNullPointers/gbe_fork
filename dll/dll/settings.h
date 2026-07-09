@@ -158,6 +158,7 @@ struct Overlay_Appearance {
     uint32 notification_duration_screenshot = 1000; // screenshot saved duration (millisec)
 
     std::string ach_unlock_datetime_format = "%Y/%m/%d - %H:%M:%S";
+    std::string screenshot_datetime_format = "%Y/%m/%d - %H:%M:%S";
     bool show_notification_history = false;
     bool show_achievement_list = false;
     bool unlocked_expanded = true;
@@ -375,6 +376,17 @@ public:
     // disable all overlay warnings
     bool disable_overlay_warning_any = false;
     Overlay_Appearance overlay_appearance{};
+    // toggle overlay buttons
+    bool overlay_show_button_user_info = true;
+    bool overlay_show_button_achievements = true;
+    bool overlay_show_button_test_achievement = true;
+    bool overlay_show_button_copy_id = true;
+    bool overlay_show_button_screenshots = true;
+    bool overlay_show_button_history = true;
+    bool overlay_show_button_settings = true;
+    bool overlay_show_checkbox_fps = true;
+    bool overlay_show_checkbox_frametime = true;
+    bool overlay_show_checkbox_playtime = true;
     // whether to auto accept any overlay invites
     bool auto_accept_any_overlay_invites = false;
     // list of user steam IDs to auto-accept invites from
