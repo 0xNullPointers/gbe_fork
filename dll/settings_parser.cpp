@@ -398,6 +398,9 @@ static void load_overlay_appearance(class Settings *settings_client, class Setti
             } else if (name.compare("Achievement_Unlock_Datetime_Format") == 0) {
                 settings_client->overlay_appearance.ach_unlock_datetime_format = value;
                 settings_server->overlay_appearance.ach_unlock_datetime_format = value;
+                } else if (name.compare("Screenshot_Datetime_Format") == 0) {
+                settings_client->overlay_appearance.screenshot_datetime_format = value;
+                settings_server->overlay_appearance.screenshot_datetime_format = value;
             } else if (name.compare("Show_Notification_History") == 0) {
                 bool show = (std::stol(value, NULL) != 0);
                 settings_client->overlay_appearance.show_notification_history = show;
@@ -1661,6 +1664,36 @@ static void parse_overlay_general_config(class Settings *settings_client, class 
     settings_client->disable_overlay_warning_local_save = ini.GetBoolValue("overlay::general", "disable_warning_local_save", settings_client->disable_overlay_warning_local_save);
     settings_server->disable_overlay_warning_local_save = ini.GetBoolValue("overlay::general", "disable_warning_local_save", settings_server->disable_overlay_warning_local_save);
 
+    settings_client->overlay_show_button_user_info = ini.GetBoolValue("overlay::general", "show_button_user_info", settings_client->overlay_show_button_user_info);
+    settings_server->overlay_show_button_user_info = ini.GetBoolValue("overlay::general", "show_button_user_info", settings_server->overlay_show_button_user_info);
+
+    settings_client->overlay_show_button_achievements = ini.GetBoolValue("overlay::general", "show_button_achievements", settings_client->overlay_show_button_achievements);
+    settings_server->overlay_show_button_achievements = ini.GetBoolValue("overlay::general", "show_button_achievements", settings_server->overlay_show_button_achievements);
+
+    settings_client->overlay_show_button_test_achievement = ini.GetBoolValue("overlay::general", "show_button_test_achievement", settings_client->overlay_show_button_test_achievement);
+    settings_server->overlay_show_button_test_achievement = ini.GetBoolValue("overlay::general", "show_button_test_achievement", settings_server->overlay_show_button_test_achievement);
+
+    settings_client->overlay_show_button_copy_id = ini.GetBoolValue("overlay::general", "show_button_copy_id", settings_client->overlay_show_button_copy_id);
+    settings_server->overlay_show_button_copy_id = ini.GetBoolValue("overlay::general", "show_button_copy_id", settings_server->overlay_show_button_copy_id);
+
+    settings_client->overlay_show_button_screenshots = ini.GetBoolValue("overlay::general", "show_button_screenshots", settings_client->overlay_show_button_screenshots);
+    settings_server->overlay_show_button_screenshots = ini.GetBoolValue("overlay::general", "show_button_screenshots", settings_server->overlay_show_button_screenshots);
+
+    settings_client->overlay_show_button_history = ini.GetBoolValue("overlay::general", "show_button_history", settings_client->overlay_show_button_history);
+    settings_server->overlay_show_button_history = ini.GetBoolValue("overlay::general", "show_button_history", settings_server->overlay_show_button_history);
+
+    settings_client->overlay_show_button_settings = ini.GetBoolValue("overlay::general", "show_button_settings", settings_client->overlay_show_button_settings);
+    settings_server->overlay_show_button_settings = ini.GetBoolValue("overlay::general", "show_button_settings", settings_server->overlay_show_button_settings);
+
+    settings_client->overlay_show_checkbox_fps = ini.GetBoolValue("overlay::general", "show_checkbox_fps", settings_client->overlay_show_checkbox_fps);
+    settings_server->overlay_show_checkbox_fps = ini.GetBoolValue("overlay::general", "show_checkbox_fps", settings_server->overlay_show_checkbox_fps);
+
+    settings_client->overlay_show_checkbox_frametime = ini.GetBoolValue("overlay::general", "show_checkbox_frametime", settings_client->overlay_show_checkbox_frametime);
+    settings_server->overlay_show_checkbox_frametime = ini.GetBoolValue("overlay::general", "show_checkbox_frametime", settings_server->overlay_show_checkbox_frametime);
+
+    settings_client->overlay_show_checkbox_playtime = ini.GetBoolValue("overlay::general", "show_checkbox_playtime", settings_client->overlay_show_checkbox_playtime);
+    settings_server->overlay_show_checkbox_playtime = ini.GetBoolValue("overlay::general", "show_checkbox_playtime", settings_server->overlay_show_checkbox_playtime);
+    
     settings_client->overlay_upload_achs_icons_to_gpu = ini.GetBoolValue("overlay::general", "upload_achievements_icons_to_gpu", settings_client->overlay_upload_achs_icons_to_gpu);
     settings_server->overlay_upload_achs_icons_to_gpu = ini.GetBoolValue("overlay::general", "upload_achievements_icons_to_gpu", settings_server->overlay_upload_achs_icons_to_gpu);
 
