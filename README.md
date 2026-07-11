@@ -226,7 +226,7 @@ Open CMD in the repo folder, then run the following
       ```
     * 32-bit build (`MINGW32`)
       ```shell
-      make config=release_x32 -j 8 all
+      make config=release_x86 -j 8 all
       ```
     To see all possible build targets
     ```shell
@@ -253,7 +253,7 @@ export CXX="clang++"
 ```  
 Then run the following
 ```shell
-make config=release_x32 -j 8 all
+make config=release_x86 -j 8 all
 make config=release_x64 -j 8 all
 ```  
 
