@@ -221,6 +221,7 @@ private:
     CGameID game_id{};
     std::string name{};
     std::string language{}; // default "english"
+    std::string overlay_language{}; // for overlay language
     CSteamID lobby_id = k_steamIDNil;
 
     bool offline = false;
@@ -438,6 +439,9 @@ public:
 
     const char *get_language();
     void set_language(const char *language);
+
+    const char *get_overlay_language();
+    void set_overlay_language(const char *language);
 
     void set_supported_languages(const std::set<std::string> &langs);
     const std::set<std::string>& get_supported_languages_set() const;
