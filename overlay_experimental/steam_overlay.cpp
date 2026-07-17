@@ -252,7 +252,7 @@ Steam_Overlay::Steam_Overlay(Settings* settings, Local_Storage *local_storage, S
         !settings->disable_overlay_warning_any && !settings->disable_overlay_warning_bad_appid && settings->get_local_game_id().AppID() == 0;
 
     current_language = 0;
-    const char *language = settings->get_language();
+    const char *language = settings->get_overlay_language();
 
     show_user_info = settings->overlay_always_show_user_info;
     show_notification_history = settings->overlay_appearance.show_notification_history;

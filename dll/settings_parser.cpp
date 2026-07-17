@@ -2080,8 +2080,10 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
     uint32 alt_steamid_count = parse_alt_steamid_count(local_storage);
 
     // Language
-    std::string language(parse_current_language(local_storage));
-    // Supported languages, this will change the current language if needed
+    std::string requested_language(parse_current_language(local_storage));
+    std::string language = requested_language; // creating a copy for the game language
+    
+    // Supported languages
     std::set<std::string> supported_languages(parse_supported_languages(local_storage, language));
 
     bool steam_offline_mode = ini.GetBoolValue("main::connectivity", "offline", false);
@@ -2099,6 +2101,9 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
     // listen port
     settings_client->set_port(port);
     settings_server->set_port(port);
+    // provide the original 'requested_language' value, which is not affected by the txt file, as the overlay language
+    settings_client->set_overlay_language(requested_language.c_str());
+    settings_server->set_overlay_language(requested_language.c_str());
     // broadcasts list
     settings_client->custom_broadcasts = custom_broadcasts;
     settings_server->custom_broadcasts = custom_broadcasts;
