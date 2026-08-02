@@ -25,10 +25,10 @@ Steam_Utils::Steam_Utils(Settings *settings, class SteamCallResults *callback_re
     callbacks(callbacks),
     overlay(overlay)
 {
-    
+
 }
 
-// return the number of seconds since the user 
+// return the number of seconds since the user
 uint32 Steam_Utils::GetSecondsSinceAppActive()
 {
     PRINT_DEBUG_ENTRY();
@@ -228,10 +228,10 @@ bool Steam_Utils::IsOverlayEnabled()
 }
 
 
-// Normally this call is unneeded if your game has a constantly running frame loop that calls the 
+// Normally this call is unneeded if your game has a constantly running frame loop that calls the
 // D3D Present API, or OGL SwapBuffers API every frame.
 //
-// However, if you have a game that only refreshes the screen on an event driven basis then that can break 
+// However, if you have a game that only refreshes the screen on an event driven basis then that can break
 // the overlay, as it uses your Present/SwapBuffers calls to drive it's internal frame loop and it may also
 // need to Present() to the screen any time an even needing a notification happens or when the overlay is
 // brought up over the game by a user.  You can use this API to ask the overlay if it currently need a present
@@ -246,7 +246,7 @@ bool Steam_Utils::BOverlayNeedsPresent()
 
 
 // Asynchronous call to check if an executable file has been signed using the public key set on the signing tab
-// of the partner site, for example to refuse to load modified executable files.  
+// of the partner site, for example to refuse to load modified executable files.
 // The result is returned in CheckFileSignature_t.
 //   k_ECheckFileSignatureNoSignaturesFoundForThisApp - This app has not been configured on the signing tab of the partner site to enable this function.
 //   k_ECheckFileSignatureNoSignaturesFoundForThisFile - This file is not listed on the signing tab for the partner site.
@@ -472,4 +472,37 @@ bool Steam_Utils::DismissGamepadTextInput()
     PRINT_DEBUG_TODO();
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
     return true;
+}
+
+ESteamHardwareType Steam_Utils::IsRunningOnSteamHardware()
+{
+    // TO-DO:
+    //      Properly return the type of
+    //      Steam hardware we are on, if any
+    return k_ESteamHardwareTypeNone;
+}
+
+
+ESteamHardwareDefaultConfig Steam_Utils::GetSteamHardwareDefaultConfig()
+{
+    // TO-DO:
+    //      Properly emulate this function
+    //      including the specific returns depending
+    //      on the type of machine we are on
+    //
+    //      Maybe have optional configurations for the emu
+    //      in the config files for steam deck users to fill in?
+    return k_ESteamHardwareDefaultConfigNone;
+}
+
+
+bool Steam_Utils::IsRunningUnderProton()
+{
+    // TO-DO:
+    //      Properly implement this
+    //
+    //      Could try to detect Proton by
+    //      GetProcAddress of a special function in a system module
+    //      that is only present under proton (based on wine?)
+    return false;
 }

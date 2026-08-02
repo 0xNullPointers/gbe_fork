@@ -249,6 +249,7 @@ extern const std::unordered_set<std::string> client_known_interfaces = {
   "SteamUtils008",
   "SteamUtils009",
   "SteamUtils010",
+  "SteamUtils011",
   "STEAMVIDEO_INTERFACE_V001",
   "STEAMVIDEO_INTERFACE_V002",
   "STEAMVIDEO_INTERFACE_V003",
