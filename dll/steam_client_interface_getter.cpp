@@ -334,6 +334,8 @@ ISteamMatchmakingServers *Steam_Client::GetISteamMatchmakingServers( HSteamUser 
 
     if (strcmp(pchVersion, "SteamMatchMakingServers001") == 0) {
         return reinterpret_cast<ISteamMatchmakingServers *>(static_cast<ISteamMatchmakingServers001 *>(steam_matchmaking_servers));
+    } else if (strcmp(pchVersion, "SteamMatchMakingServers002") == 0) {
+        return reinterpret_cast<ISteamMatchmakingServers *>(static_cast<ISteamMatchmakingServers002 *>(steam_matchmaking_servers));
     } else if (strcmp(pchVersion, STEAMMATCHMAKINGSERVERS_INTERFACE_VERSION) == 0) {
         return reinterpret_cast<ISteamMatchmakingServers *>(static_cast<ISteamMatchmakingServers *>(steam_matchmaking_servers));
     }

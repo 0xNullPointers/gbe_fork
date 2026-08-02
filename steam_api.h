@@ -108,6 +108,7 @@
 #include "isteammatchmaking007.h"
 #include "isteammatchmaking008.h"
 #include "isteammatchmakingservers002.h"
+#include "isteamgamesearch001.h"
 #include "isteamuserstats.h"
 #include "isteamuserstats012.h"
 #include "isteamuserstats011.h"

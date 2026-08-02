@@ -382,7 +382,7 @@ void Steam_Matchmaking_Servers::ReleaseRequest( HServerListRequest hServerListRe
 */
 
 // Get details on a given server in the list, you can get the valid range of index
-// values by calling GetServerCount().  You will also receive index values in 
+// values by calling GetServerCount().  You will also receive index values in
 // ISteamMatchmakingServerListResponse::ServerResponded() callbacks
 gameserveritem_t *Steam_Matchmaking_Servers::GetServerDetails( HServerListRequest hRequest, int iServer )
 {
@@ -417,7 +417,7 @@ gameserveritem_t *Steam_Matchmaking_Servers::GetServerDetails( HServerListReques
 
 
 // Cancel an request which is operation on the given list type.  You should call this to cancel
-// any in-progress requests before destructing a callback object that may have been passed 
+// any in-progress requests before destructing a callback object that may have been passed
 // to one of the above list request calls.  Not doing so may result in a crash when a callback
 // occurs on the destructed object.
 // Canceling a query does not release the allocated request handle.
@@ -435,7 +435,7 @@ void Steam_Matchmaking_Servers::CancelQuery( HServerListRequest hRequest )
         ++g;
     }
 }
- 
+
 
 // Ping every server in your list again but don't update the list of servers
 // Query callback installed when the server list was requested will be used
@@ -446,7 +446,7 @@ void Steam_Matchmaking_Servers::RefreshQuery( HServerListRequest hRequest )
 {
     PRINT_DEBUG("%p", hRequest);
 }
- 
+
 
 // Returns true if the list is currently refreshing its server list
 bool Steam_Matchmaking_Servers::IsRefreshing( HServerListRequest hRequest )
@@ -454,7 +454,7 @@ bool Steam_Matchmaking_Servers::IsRefreshing( HServerListRequest hRequest )
     PRINT_DEBUG("%p", hRequest);
     return false;
 }
- 
+
 
 // How many servers in the given list, GetServerDetails above takes 0... GetServerCount() - 1
 int Steam_Matchmaking_Servers::GetServerCount( HServerListRequest hRequest )
@@ -487,7 +487,7 @@ void Steam_Matchmaking_Servers::RefreshServer( HServerListRequest hRequest, int 
 
 
 // Get details on a given server in the list, you can get the valid range of index
-// values by calling GetServerCount().  You will also receive index values in 
+// values by calling GetServerCount().  You will also receive index values in
 // ISteamMatchmakingServerListResponse::ServerResponded() callbacks
 gameserveritem_t* Steam_Matchmaking_Servers::GetServerDetails( EMatchMakingType eType, int iServer )
 {
@@ -496,7 +496,7 @@ gameserveritem_t* Steam_Matchmaking_Servers::GetServerDetails( EMatchMakingType 
 }
 
 // Cancel an request which is operation on the given list type.  You should call this to cancel
-// any in-progress requests before destructing a callback object that may have been passed 
+// any in-progress requests before destructing a callback object that may have been passed
 // to one of the above list request calls.  Not doing so may result in a crash when a callback
 // occurs on the destructed object.
 void Steam_Matchmaking_Servers::CancelQuery( EMatchMakingType eType )
@@ -583,9 +583,18 @@ HServerQuery Steam_Matchmaking_Servers::ServerRules( uint32 unIP, uint16 usPort,
     return r.id;
 }
 
+// Request the list of friends that have played on this server
+HServerQuery Steam_Matchmaking_Servers::ServerFriends( uint32 unIP, uint16 usPort, ISteamMatchmakingServerFriendsResponse *pRequestServersResponse )
+{
+    // TO-DO
+    //
+    // Currently we pretend no friends :(
+
+    return HSERVERQUERY_INVALID;
+}
 
 // Cancel an outstanding Ping/Players/Rules query from above.  You should call this to cancel
-// any in-progress requests before destructing a callback object that may have been passed 
+// any in-progress requests before destructing a callback object that may have been passed
 // to one of the above calls to avoid crashing when callbacks occur.
 void Steam_Matchmaking_Servers::CancelServerQuery( HServerQuery hServerQuery )
 {
@@ -663,7 +672,7 @@ void Steam_Matchmaking_Servers::server_details(Gameserver *g, gameserveritem_t *
 
                 if (ssq_info_has_gameid(ssq_a2s_info)) g->set_appid(CGameID((uint64)ssq_a2s_info->gameid).AppID());
                 else g->set_appid(ssq_a2s_info->id);
-                
+
                 g->set_offline(false);
             } else {
                 PRINT_DEBUG("  ssq server info failed: %s", ssq_server_emsg(ssq));
@@ -692,7 +701,7 @@ void Steam_Matchmaking_Servers::server_details(Gameserver *g, gameserveritem_t *
     server->m_nServerVersion = g->version();
     server->SetName(g->server_name().c_str());
     server->m_steamID = CSteamID((uint64)g->id());
-    
+
     memset(server->m_szGameDir, 0, sizeof(server->m_szGameDir));
     g->mod_dir().copy(server->m_szGameDir, sizeof(server->m_szGameDir) - 1);
 

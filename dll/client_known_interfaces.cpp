@@ -120,6 +120,7 @@ extern const std::unordered_set<std::string> client_known_interfaces = {
   "SteamMatchMaking009",
   "SteamMatchMakingServers001",
   "SteamMatchMakingServers002",
+  "SteamMatchMakingServers003",
   "STEAMMUSIC_INTERFACE_VERSION001",
   "STEAMMUSICREMOTE_INTERFACE_VERSION001",
   "SteamNetworking001",
