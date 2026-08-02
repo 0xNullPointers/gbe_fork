@@ -698,6 +698,7 @@ void Steam_Apps::SetGamePerformanceSetting( EGamePerformanceSetting setting )
     //
     // ALso this seems to be used for telemetry sent to Valve
     // so yea we can leave unimpl'd
+    PRINT_DEBUG("'%d'", (int)setting);
 }
 
 void Steam_Apps::SetGameRenderResolution( uint32 unWidth, uint32 unHeight )
@@ -712,6 +713,7 @@ void Steam_Apps::SetGameRenderResolution( uint32 unWidth, uint32 unHeight )
     // OK REASON:
     // For telemetry for Valve servers get sent to
     // so no need to impl clearly.
+    PRINT_DEBUG("'%u' '%u'", (uint32_t)unWidth, (uint32_t)unHeight);
 }
 
 #ifdef _PS3
