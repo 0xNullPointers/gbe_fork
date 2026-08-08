@@ -415,6 +415,8 @@ void *Steam_Client::GetISteamGenericInterface( HSteamUser hSteamUser, HSteamPipe
             return reinterpret_cast<void *>(static_cast<ISteamNetworkingSockets010 *>( steam_networking_sockets_temp));
         } else if (strcmp(pchVersion, "SteamNetworkingSockets011") == 0) { // Not found in public Archive, based on reversing, requested by appid 1492070
             return reinterpret_cast<void *>(static_cast<ISteamNetworkingSockets011 *>( steam_networking_sockets_temp));
+        } else if (strcmp(pchVersion, "SteamNetworkingSockets012") == 0) {
+            return reinterpret_cast<void *>(static_cast<ISteamNetworkingSockets012 *>( steam_networking_sockets_temp));
         } else if (strcmp(pchVersion, STEAMNETWORKINGSOCKETS_INTERFACE_VERSION) == 0) {
             return reinterpret_cast<void *>(static_cast<ISteamNetworkingSockets *>( steam_networking_sockets_temp));
         }

@@ -944,10 +944,6 @@ void Steam_Networking::Callback(Common_Message *msg)
 
     if (msg->has_low_level()) {
         if (msg->low_level().type() == Low_Level::DISCONNECT) {
-            CSteamID source_id((uint64)msg->source_id());
-            if (connection_exists(source_id)) {
-                P2PSessionConnectFail_t data;
-                data.m_steamIDRemote = source_id;
                 // FIX REASON:
                 //  as of SDK 1.65...
                 //  errors returned for SendP2PPacket via callback
@@ -955,9 +951,15 @@ void Steam_Networking::Callback(Common_Message *msg)
                 //  (for ex. this could tell another user if someone
                 //      is online or offline inadvertently.
                 //      which is not what is wanted)
-                data.m_eP2PSessionError = k_EP2PSessionErrorNone; // k_EP2PSessionErrorDestinationNotLoggedIn;
+#if 0
+            CSteamID source_id((uint64)msg->source_id());
+            if (connection_exists(source_id)) {
+                P2PSessionConnectFail_t data;
+                data.m_steamIDRemote = source_id;
+                data.m_eP2PSessionError = k_EP2PSessionErrorDestinationNotLoggedIn;
                 callbacks->addCBResult(data.k_iCallback, &data, sizeof(data));
             }
+#endif
 
             for (auto & socket : connection_sockets) {
                 if (socket.target.ConvertToUint64() == msg->source_id()) {

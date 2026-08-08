@@ -436,6 +436,7 @@ public:
     /// See ISteamNetworkingSockets::SendMessageToConnection for possible
     /// failure codes.
     void SendMessages( int nMessages, SteamNetworkingMessage_t *const *pMessages, int64 *pOutMessageNumberOrResult );
+    void SendMessages( int nMessages, SteamNetworkingMessage_t **pMessages, int64 *pOutMessageNumberOrResult, bool bDeleteFailedMessages );
 
 
     /// If Nagle is enabled (its on by default) then when calling 
@@ -595,7 +596,7 @@ public:
     /// identity.  Otherwise, if you pass nullptr, the respective connection will assume a generic
     /// "localhost" identity.  If you use real network loopback, this might be translated to the
     /// actual bound loopback port.  Otherwise, the port will be zero.
-    bool CreateSocketPair( HSteamNetConnection *pOutConnection1, HSteamNetConnection *pOutConnection2, bool bUseNetworkLoopback, const SteamNetworkingIdentity *pIdentity1, const SteamNetworkingIdentity *pIdentity2 );
+    bool CreateSocketPair( HSteamNetConnection *pOutConnection1, HSteamNetConnection *pOutConnection2, bool bUseNetworkLoopback, const SteamNetworkingIdentity *pPeerIdentity1, const SteamNetworkingIdentity *pPeerIdentity2 );
 
     /// Configure multiple outbound messages streams ("lanes") on a connection, and
     /// control head-of-line blocking between them.  Messages within a given lane

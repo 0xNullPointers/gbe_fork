@@ -140,6 +140,7 @@ extern const std::unordered_set<std::string> client_known_interfaces = {
   "SteamNetworkingSockets010",
   "SteamNetworkingSockets011",
   "SteamNetworkingSockets012",
+  "SteamNetworkingSockets013",
   "SteamNetworkingSocketsSerialized001",
   "SteamNetworkingSocketsSerialized002",
   "SteamNetworkingSocketsSerialized003",

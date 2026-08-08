@@ -542,7 +542,7 @@ HServerQuery Steam_Matchmaking_Servers::PingServer( uint32 unIP, uint16 usPort, 
 {
     PRINT_DEBUG("%hhu.%hhu.%hhu.%hhu:%hu", ((unsigned char *)&unIP)[3], ((unsigned char *)&unIP)[2], ((unsigned char *)&unIP)[1], ((unsigned char *)&unIP)[0], usPort);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    Steam_Matchmaking_Servers_Direct_IP_Request r;
+    Steam_Matchmaking_Servers_Direct_IP_Request r{};
     r.id = new_server_query();
     r.ip = unIP;
     r.port = usPort;
@@ -557,7 +557,7 @@ HServerQuery Steam_Matchmaking_Servers::PlayerDetails( uint32 unIP, uint16 usPor
 {
     PRINT_DEBUG("%hhu.%hhu.%hhu.%hhu:%hu", ((unsigned char *)&unIP)[3], ((unsigned char *)&unIP)[2], ((unsigned char *)&unIP)[1], ((unsigned char *)&unIP)[0], usPort);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    Steam_Matchmaking_Servers_Direct_IP_Request r;
+    Steam_Matchmaking_Servers_Direct_IP_Request r{};
     r.id = new_server_query();
     r.ip = unIP;
     r.port = usPort;
@@ -573,7 +573,7 @@ HServerQuery Steam_Matchmaking_Servers::ServerRules( uint32 unIP, uint16 usPort,
 {
     PRINT_DEBUG("%hhu.%hhu.%hhu.%hhu:%hu", ((unsigned char *)&unIP)[3], ((unsigned char *)&unIP)[2], ((unsigned char *)&unIP)[1], ((unsigned char *)&unIP)[0], usPort);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    Steam_Matchmaking_Servers_Direct_IP_Request r;
+    Steam_Matchmaking_Servers_Direct_IP_Request r{};
     r.id = new_server_query();
     r.ip = unIP;
     r.port = usPort;
@@ -590,7 +590,16 @@ HServerQuery Steam_Matchmaking_Servers::ServerFriends( uint32 unIP, uint16 usPor
     //
     // Currently we pretend no friends :(
 
-    return HSERVERQUERY_INVALID;
+    PRINT_DEBUG("%hhu.%hhu.%hhu.%hhu:%hu", ((unsigned char *)&unIP)[3], ((unsigned char *)&unIP)[2], ((unsigned char *)&unIP)[1], ((unsigned char *)&unIP)[0], usPort);
+    std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    Steam_Matchmaking_Servers_Direct_IP_Request r{};
+    r.id = new_server_query();
+    r.ip = unIP;
+    r.port = usPort;
+    r.server_friends_response = pRequestServersResponse;
+    r.created = std::chrono::high_resolution_clock::now();
+    direct_ip_requests.push_back(r);
+    return r.id;
 }
 
 // Cancel an outstanding Ping/Players/Rules query from above.  You should call this to cancel
@@ -713,6 +722,9 @@ void Steam_Matchmaking_Servers::server_details(Gameserver *g, gameserveritem_t *
 
     memset(server->m_szGameTags, 0, sizeof(server->m_szGameTags));
     g->tags().copy(server->m_szGameTags, sizeof(server->m_szGameTags) - 1);
+
+    server->m_nCurrentFriendCount = 0; // TODO
+    server->m_nTotalFriendCount = 0;   // TODO
 
     PRINT_DEBUG("  " "%" PRIu64 "", g->id());
 }
@@ -952,6 +964,8 @@ void Steam_Matchmaking_Servers::RunCallbacks()
         if (r.rules_response) r.rules_response->RulesRefreshComplete();
         if (r.players_response) r.players_response->PlayersRefreshComplete();
         if (r.ping_response) r.ping_response->ServerFailedToRespond();
+        // TODO: friends response
+        if (r.server_friends_response) r.server_friends_response->FriendsRefreshComplete();
     }
 
     requests_from_GetServerDetails.cleanup();

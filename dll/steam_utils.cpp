@@ -439,9 +439,9 @@ ESteamIPv6ConnectivityState Steam_Utils::GetIPv6ConnectivityState( ESteamIPv6Con
 // returns true if currently running on the Steam Deck device
 bool Steam_Utils::IsSteamRunningOnSteamDeck()
 {
-    PRINT_DEBUG("%i", (int)settings->steam_deck);
+    PRINT_DEBUG("current: %i", (int)(settings->steam_hardware_type == k_ESteamHardwareTypeSteamDeck));
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    return settings->steam_deck;
+    return settings->steam_hardware_type == k_ESteamHardwareTypeSteamDeck;
 }
 
 // Opens a floating keyboard over the game content and sends OS keyboard keys directly to the game.
@@ -476,33 +476,27 @@ bool Steam_Utils::DismissGamepadTextInput()
 
 ESteamHardwareType Steam_Utils::IsRunningOnSteamHardware()
 {
-    // TO-DO:
-    //      Properly return the type of
-    //      Steam hardware we are on, if any
-    return k_ESteamHardwareTypeNone;
+    PRINT_DEBUG("current: %i", (int)settings->steam_hardware_type);
+    std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    return settings->steam_hardware_type;
 }
 
 
 ESteamHardwareDefaultConfig Steam_Utils::GetSteamHardwareDefaultConfig()
 {
-    // TO-DO:
-    //      Properly emulate this function
-    //      including the specific returns depending
-    //      on the type of machine we are on
-    //
-    //      Maybe have optional configurations for the emu
-    //      in the config files for steam deck users to fill in?
-    return k_ESteamHardwareDefaultConfigNone;
+    PRINT_DEBUG_ENTRY();
+    std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    return settings->steam_hardware_def_config;
 }
 
 
 bool Steam_Utils::IsRunningUnderProton()
 {
     // TO-DO:
-    //      Properly implement this
-    //
     //      Could try to detect Proton by
     //      GetProcAddress of a special function in a system module
     //      that is only present under proton (based on wine?)
-    return false;
+    PRINT_DEBUG("current: %i", (int)settings->is_under_proton);
+    std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    return settings->is_under_proton;
 }

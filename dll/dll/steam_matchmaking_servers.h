@@ -31,6 +31,7 @@ struct Steam_Matchmaking_Servers_Direct_IP_Request {
 	ISteamMatchmakingRulesResponse *rules_response{};
 	ISteamMatchmakingPlayersResponse *players_response{};
 	ISteamMatchmakingPingResponse *ping_response{};
+	ISteamMatchmakingServerFriendsResponse *server_friends_response{};
 };
 
 struct Steam_Matchmaking_Servers_Gameserver_Friends {
