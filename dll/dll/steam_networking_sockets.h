@@ -94,6 +94,8 @@ public ISteamNetworkingSockets
     struct shared_between_client_server *sbcs{};
     std::chrono::steady_clock::time_point created{};
 
+    std::string version{};
+
     static const int SNS_DISABLED_PORT = -1;
 
     static void steam_callback(void *object, Common_Message *msg);
@@ -125,6 +127,9 @@ public ISteamNetworkingSockets
 public:
     Steam_Networking_Sockets(class Settings *settings, class Networking *network, class SteamCallResults *callback_results, class SteamCallBacks *callbacks, class RunEveryRunCB *run_every_runcb, shared_between_client_server *sbcs);
     ~Steam_Networking_Sockets();
+
+    std::string get_version() const;
+    void set_version(const std::string &version);
 
     shared_between_client_server *get_shared_between_client_server();
 

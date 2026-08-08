@@ -394,6 +394,8 @@ void *Steam_Client::GetISteamGenericInterface( HSteamUser hSteamUser, HSteamPipe
             steam_networking_sockets_temp = steam_networking_sockets;
         }
 
+        steam_networking_sockets_temp->set_version(pchVersion);
+
         if (strcmp(pchVersion, "SteamNetworkingSockets001") == 0) {
             return reinterpret_cast<void *>(static_cast<ISteamNetworkingSockets001 *>( steam_networking_sockets_temp)); // SteamNetworkingSockets001 Not found in public Archive, must be before 1.44
         } else if (strcmp(pchVersion, "SteamNetworkingSockets002") == 0) {

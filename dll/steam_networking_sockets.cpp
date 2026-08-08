@@ -147,6 +147,16 @@ bool Steam_Networking_Sockets::send_packet_new_connection(HSteamNetConnection m_
     return false;
 }
 
+std::string Steam_Networking_Sockets::get_version() const
+{
+    return version;
+}
+
+void Steam_Networking_Sockets::set_version(const std::string &version)
+{
+    this->version = version;
+}
+
 shared_between_client_server* Steam_Networking_Sockets::get_shared_between_client_server()
 {
     return sbcs;
