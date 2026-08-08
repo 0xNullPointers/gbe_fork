@@ -153,6 +153,7 @@
 #include "isteamnetworkingsockets009.h"
 #include "isteamnetworkingsockets010.h"
 #include "isteamnetworkingsockets011.h"
+#include "isteamnetworkingsockets012.h"
 #include "isteamremotestorage.h"
 #include "isteamremotestorage001.h"
 #include "isteamremotestorage002.h"

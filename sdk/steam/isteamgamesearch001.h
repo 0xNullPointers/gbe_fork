@@ -5,8 +5,8 @@
 #endif
 
 // NOTE:
-//  this interface seems to have been removed from the
-//  isteammatchmaking.h interface umbrella since sdk 1.65
+//  this interface was removed from the
+//  isteammatchmaking.h since sdk 1.63
 
 //-----------------------------------------------------------------------------
 // Purpose: Functions for match making services for clients to get to favorites
