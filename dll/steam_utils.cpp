@@ -498,5 +498,16 @@ bool Steam_Utils::IsRunningUnderProton()
     //      that is only present under proton (based on wine?)
     PRINT_DEBUG("current: %i", (int)settings->is_under_proton);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    return settings->is_under_proton;
+
+#ifdef _WIN32
+    HMODULE ntdll = ::GetModuleHandleA("ntdll.dll");
+#endif
+
+    bool ret = settings->is_under_proton
+#ifdef _WIN32
+    ||(ntdll != NULL && ::GetProcAddress(ntdll, "wine_get_build_id") != NULL)
+#endif
+    ;
+
+    return ret;
 }
