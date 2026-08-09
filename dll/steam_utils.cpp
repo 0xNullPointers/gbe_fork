@@ -499,15 +499,16 @@ bool Steam_Utils::IsRunningUnderProton()
     PRINT_DEBUG("current: %i", (int)settings->is_under_proton);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
-#ifdef _WIN32
-    HMODULE ntdll = ::GetModuleHandleA("ntdll.dll");
+#ifdef __WINDOWS__
+    HMODULE ntdll = ::GetModuleHandleW(L"ntdll.dll");
 #endif
 
     bool ret = settings->is_under_proton
-#ifdef _WIN32
-    ||(ntdll != NULL && ::GetProcAddress(ntdll, "wine_get_build_id") != NULL)
+#ifdef __WINDOWS__
+    || (ntdll != NULL && ::GetProcAddress(ntdll, "wine_get_build_id") != NULL)
 #endif
     ;
 
+    PRINT_DEBUG("final: %i", (int)ret);
     return ret;
 }
