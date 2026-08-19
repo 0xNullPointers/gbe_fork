@@ -723,7 +723,7 @@ void Steam_Apps::SetGameRenderResolution( uint32 unWidth, uint32 unHeight )
         PRINT_DEBUG("%s", pchActivationCode);
         std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
-        if (!pchActivationCode) return
+        if (!pchActivationCode) return k_uAPICallInvalid;
         RegisterActivationCodeResponse_t data{};
         data.m_eResult = ERegisterActivationCodeResult::k_ERegisterActivationCodeResultOK;
         // data.m_unPackageRegistered = 0; // TODO set this
