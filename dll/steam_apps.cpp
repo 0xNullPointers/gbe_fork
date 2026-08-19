@@ -713,7 +713,7 @@ void Steam_Apps::SetGameRenderResolution( uint32 unWidth, uint32 unHeight )
     // OK REASON:
     // For telemetry for Valve servers get sent to
     // so no need to impl clearly.
-    PRINT_DEBUG("'%u' '%u'", (uint32_t)unWidth, (uint32_t)unHeight);
+    PRINT_DEBUG("'%u' '%u'", unWidth, unHeight);
 }
 
 #ifdef _PS3
